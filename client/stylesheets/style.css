@@ -6,8 +6,34 @@ a: #FFFFFF;
 *****/
 
 /* -------------------------
-    Navbar Declarartions
+    Global Declarations
    -------------------------*/
+
+body { 
+	padding-top: 60px; /* Needed for bs3 fixed top nav bar*/
+}
+
+h1 {
+	text-align: center;
+}
+
+.cotainer {
+	
+}
+
+/* -------------------------
+    Navbar Declarations
+   -------------------------*/
+
+/*Go over this and learn!*/
+.navbar .navbar-nav {
+    display: inline-block;
+    float: none;
+}
+
+.navbar .navbar-collapse {
+    text-align: center;
+}
 
 .navbar {
 	background-color: #FF6347;
@@ -15,6 +41,10 @@ a: #FFFFFF;
 
 .navbar-default .navbar-nav > li > a {
 	color: #FFFFFF;
+	font-family: 'Source Sans Pro', sans-serif;
+	font-size: 1.3em;
+	margin-top: 7px;
+	margin-top: 7px;
 }
 
 .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
@@ -25,4 +55,34 @@ a: #FFFFFF;
     margin:0;
     float:none;
     display:inline-block;
+}
+
+/* -------------------------
+    Jumbotron Declarations
+   -------------------------*/
+
+.Jumbotron {
+	background-image: url("img/background.jpg");
+}
+
+.row {
+	display: inline;
+	padding-top: 10px;
+}
+
+/* -------------------------
+    Contact Declarations
+   -------------------------*/
+.list-group {
+	width: 30%;
+ 	margin: 0 auto;
+}
+	
+.list-group a {
+	text-align: center;
+}
+
+.tjPic {
+	width: 140px;
+	height: 140px;
 }
