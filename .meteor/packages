@@ -9,3 +9,6 @@ autopublish
 insecure
 twbs:bootstrap
 mrt:fullcalendar
+accounts-base
+accounts-password
+accounts-ui
