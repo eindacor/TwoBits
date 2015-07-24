@@ -17,8 +17,8 @@ h1 {
 	text-align: center;
 }
 
-.cotainer {
-	
+span {
+	font-weight: bold;
 }
 
 /* -------------------------
@@ -70,6 +70,11 @@ h1 {
 	padding-top: 10px;
 }
 
+.thumbnail {
+	background-color: none;
+	border-radius: none;
+}
+
 /* -------------------------
     Contact Declarations
    -------------------------*/
@@ -82,7 +87,22 @@ h1 {
 	text-align: center;
 }
 
-.tjPic {
+.profilePic {
 	width: 140px;
 	height: 140px;
+	float: left;
+}
+
+.containerbarberprofile {
+	padding-top: 4.6em;
+}
+
+.barberDescription {
+	float: left;
+	display: inline-block;
+	list-style: none;
+}
+
+.barberDescription li {
+	padding-bottom: 8px;
 }
