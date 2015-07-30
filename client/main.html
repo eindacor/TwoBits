@@ -82,8 +82,21 @@
 				<li><span>I am a barber because:</span> I am the best barber in town</li>
 				<li><span>My spare time:</span> Ride bike</li>
 				<li><span>Haircut Availability:</span> 2010</li>
-			</ul>
-			{{> maincalendar}}
+			</ul>	
 		</div>
 	</section>
+			{{ #if currentUser }}
+				{{ > testDialog }}
+				{{> main}}
+			{{ else }}
+				<div class="container"> 
+					{{> loginButtons}}
+				</div>
+			{{ /if }}
 </body>
+
+<template name="testDialog">
+	{{ #if showDialogModal }}
+		{{> Dialog}}
+	{{ /if }}
+</template>
