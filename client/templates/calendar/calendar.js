@@ -6,8 +6,8 @@ Template.Dialog.events({
 		Session.set('showDialogModal', "false");
 		},
 
-	'click .updateTitle': function(evt, tmpl){
-		var title = tmpl.find('#title').value;
+	'click .updateTitle': function(event, template){
+		var title = template.find('#title').value;
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
 		} 
