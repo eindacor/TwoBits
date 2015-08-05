@@ -92,7 +92,7 @@
 		<div class="container containerbarberprofile">
 		<h2>Book your appointment</h2>
 			{{ #if currentUser }}
-				{{ > testDialog }}
+				{{ > insertCalEvent }}
 				{{> main}}
 			{{ else }}
 				<div class="container"> 
@@ -103,7 +103,7 @@
 	</section>
 </body>
 
-<template name="testDialog">
+<template name="insertCalEvent">
 	{{ #if showDialogModal }}
 		{{> Dialog}}
 	{{ /if }}

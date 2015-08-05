@@ -7,7 +7,15 @@ Template.Dialog.events({
 		},
 
 	'click .updateTitle': function(event, template){
-		var title = template.find('#title').value;
+		var title = $('#title').val();
+		console.log(title);
+		var calObject = {
+			"title":title,
+			"start":Session.get('date'),
+			"end":Session.get('date'),
+			"owner":Meteor.userId()
+		}
+		CalEvent.insert(calObject)
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
 		} 
@@ -19,7 +27,7 @@ Template.main.helpers({
 	}
 });
 
-Template.testDialog.helpers({
+Template.insertCalEvent.helpers({
 	showDialogModal: function() {
 		return Session.get('showDialogModal') == "true";
 	}
@@ -28,6 +36,8 @@ Template.testDialog.helpers({
 Template.Dialog.helpers({
 	title: function(){
 		var ce = CalEvent.findOne({_id:Session.get('editing_event')});
+		console.log(Session.get('editing_event'));
+		console.log(ce);
 		return ce.title;
 	},
 	showDialogModal: function() {
@@ -48,14 +58,8 @@ Template.Dialog.rendered = function (){
 	Template.main.rendered = function(){
 		var calendar = $('#calendar').fullCalendar({ 
 			dayClick:function(date,allDay,jsEvent,view){
+				Session.set('date', date);
 				Session.set('showDialogModal', "true");
-				var calendarEvent = {};
-				calendarEvent.start = date;
-				calendarEvent.end = date;
-				calendarEvent.title = 'New Event';
-				calendarEvent.owner = Meteor.userId();
-				console.log(calendarEvent);
-				Meteor.call('saveCalEvent', calendarEvent);
 			},
 
 			eventClick:function(calEvent,jsEvent,view){
