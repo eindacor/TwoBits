@@ -1,6 +1,6 @@
 // if (Meteor.isClient) {
 // This is my call back for the close modal button 
-Template.Dialog.events({
+Template.dialog.events({
 	"click .closeDialog": function(event, template){
 		Session.set('editing_event', null);
 		Session.set('showDialogModal', "false");
@@ -8,20 +8,21 @@ Template.Dialog.events({
 
 	'click .updateTitle': function(event, template){
 		var title = $('#title').val();
-		console.log(title);
 		var calObject = {
 			"title":title,
 			"start":Session.get('date'),
 			"end":Session.get('date'),
-			"owner":Meteor.userId()
+			"owner":Meteor.userId(),
+			"barber": Session.get('barberName')
 		}
 		CalEvent.insert(calObject)
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
+		Session.set('barberName', null)
 		} 
 	});
 
-Template.main.helpers({
+Template.reservationsDashboard.helpers({
 	editing_event: function(){
 		return Session.get('editing_event');
 	}
@@ -33,7 +34,7 @@ Template.insertCalEvent.helpers({
 	}
 });
 
-Template.Dialog.helpers({
+Template.dialog.helpers({
 	title: function(){
 		var ce = CalEvent.findOne({_id:Session.get('editing_event')});
 		console.log(Session.get('editing_event'));
@@ -45,7 +46,7 @@ Template.Dialog.helpers({
 	}
 });
 
-Template.Dialog.rendered = function (){
+Template.dialog.rendered = function (){
 	if(Session.get('editDialog')){
 		// is editDialog a thing? look into it
 		var calevent = CalEvent.findOne({_id:Session.get('editDialog')});
@@ -63,6 +64,7 @@ Template.Dialog.rendered = function (){
 			},
 
 			eventClick:function(calEvent,jsEvent,view){
+				console.log("this works");
 				Session.set('editing_event', calEvent._id);
 				$('#title').val(calEvent.title);
 			},
