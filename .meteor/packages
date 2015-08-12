@@ -13,3 +13,4 @@ accounts-base
 accounts-password
 accounts-ui
 mrt:twilio-meteor
+iron:router
