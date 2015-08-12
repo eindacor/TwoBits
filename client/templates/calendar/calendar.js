@@ -8,16 +8,17 @@ Template.Dialog.events({
 
 	'click .updateTitle': function(event, template){
 		var title = $('#title').val();
-		console.log(title);
 		var calObject = {
 			"title":title,
 			"start":Session.get('date'),
 			"end":Session.get('date'),
-			"owner":Meteor.userId()
+			"owner":Meteor.userId(),
+			"barber": Session.get('barberName')
 		}
 		CalEvent.insert(calObject)
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
+		Session.set('barberName', null)
 		} 
 	});
 

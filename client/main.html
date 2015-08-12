@@ -57,22 +57,62 @@
 	</header>
 
 	<section>
-		<h2>The Team</h2>
-		<p class="theTeamInstructions">Select your barber below</p>
+		<h2>Book your appointment</h2>
+		<p class="theTeamInstructions">1. Select your barber below.</p>
+		<p class="theTeamInstructions">2. Sign in to book your appointment.</p>
 		<!-- <div class="col-xs-6 col-md-3">
 			<a href="#" class="img-responsive thumbnail">
 				<img src="img/DClogo.png" alt="">
 			</a>
 		</div> -->
 		<div class="list-group">
-		  <a href="#" class="list-group-item list-group-item-primary">TJ Green</a>
+			{{ > Team }}
+<!-- 		  <a href="#" class="list-group-item list-group-item-primary">TJ Green</a>
 		  <a href="#" class="list-group-item list-group-item-primary">Kevin Lorde</a>
 		  <a href="#" class="list-group-item list-group-item-primary">Mikey Sisouvong</a>
-		  <a href="#" class="list-group-item list-group-item-primary">VJ Pinero</a>
+		  <a href="#" class="list-group-item list-group-item-primary">VJ Pinero</a> -->
 		</div>
 	</section>
 
-	<section class="barberprofilebg">
+	<section class="calendarbg">
+		{{ > BookAppointment }}
+	</section>
+</body>
+
+
+<template name="Team">
+	{{ #each listOfBarbers }}
+		<button id="barber" value="{{ this }}" class="list-group-item list-group-item-primary centered">{{ this }}</button>
+	{{ /each }}	
+</template>
+
+<template name="insertCalEvent">
+	{{ #if showDialogModal }}
+		{{> Dialog}}
+	{{ /if }}
+</template>
+
+<template name="BookAppointment">
+		<div class="container containerbarberprofile">
+			{{ #if barberName }}
+				<!-- <p class="theTeamInstructions">Select your barber below</p> -->
+				<h2>To book your appointment with {{ barberName }} please sign in.</h2>
+				<!-- <p class="theTeamInstructions">Select your barber below</p> -->
+				<div class="list-group">
+				</div>
+			{{ else }}
+				<h2> Choose a barber above. </h2>
+			{{ /if }}
+			{{ #if currentUser }}
+				{{ > insertCalEvent }}
+				{{> main}}
+			{{ else }}
+				<div class="container"> 
+					{{> loginButtons}}
+				</div>
+			{{ /if }}
+		</div>
+<!-- <section class="barberprofilebg">
 		<div class="container containerbarberprofile">
 		<h2>Barber Profile</h2>
 			<h4>TJ Green</h4>
@@ -86,25 +126,5 @@
 				<li><span>Haircut Availability:</span></li>
 			</ul>	
 		</div>
-	</section>
-
-	<section class="calendarbg">
-		<div class="container containerbarberprofile">
-		<h2>Book your appointment</h2>
-			{{ #if currentUser }}
-				{{ > insertCalEvent }}
-				{{> main}}
-			{{ else }}
-				<div class="container"> 
-					{{> loginButtons}}
-				</div>
-			{{ /if }}
-		</div>
-	</section>
-</body>
-
-<template name="insertCalEvent">
-	{{ #if showDialogModal }}
-		{{> Dialog}}
-	{{ /if }}
+</section> -->
 </template>
