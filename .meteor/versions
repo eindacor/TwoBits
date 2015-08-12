@@ -37,6 +37,7 @@ mobile-status-bar@1.0.3
 mongo@1.1.0
 mrt:fullcalendar@1.6.1
 mrt:jquery-ui@1.9.2
+mrt:twilio-meteor@1.1.0
 npm-bcrypt@0.7.8_2
 observe-sequence@1.0.6
 ordered-dict@1.0.3

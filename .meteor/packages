@@ -12,3 +12,4 @@ mrt:fullcalendar
 accounts-base
 accounts-password
 accounts-ui
+mrt:twilio-meteor
