@@ -1,7 +1,7 @@
 
 var barbers = ['TJ','Kevin','Mikey','VJ'];
 
-Template.Team.helpers({
+Template.team.helpers({
 
 	'listOfBarbers' : function() {
 		return barbers;
@@ -9,7 +9,7 @@ Template.Team.helpers({
 
 });
 
-Template.Team.events({
+Template.team.events({
 
 	'click #barber': function(event, template) {
 		var barberName = event.target.value;

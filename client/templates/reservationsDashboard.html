@@ -1,47 +1,14 @@
 <template name="reservationsDashboard">
 	<section>
-		<h2>The Team</h2>
-		<p class="theTeamInstructions">Select your barber below</p>
-		<!-- <div class="col-xs-6 col-md-3">
-			<a href="#" class="img-responsive thumbnail">
-				<img src="img/DClogo.png" alt="">
-			</a>
-		</div> -->
+		<h2>Book your appointment</h2>
+		<p class="theTeamInstructions">1. Select your barber below.</p>
+		<p class="theTeamInstructions">2. Sign in to book your appointment.</p>
 		<div class="list-group">
-		  <a href="#" class="list-group-item list-group-item-primary">TJ Green</a>
-		  <a href="#" class="list-group-item list-group-item-primary">Kevin Lorde</a>
-		  <a href="#" class="list-group-item list-group-item-primary">Mikey Sisouvong</a>
-		  <a href="#" class="list-group-item list-group-item-primary">VJ Pinero</a>
-		</div>
-	</section>
-
-	<section class="barberprofilebg">
-		<div class="container containerbarberprofile">
-		<h2>Barber Profile</h2>
-			<h4>TJ Green</h4>
-			<img src="img/TJ.jpg" alt="Picture of TJ cutting hair" class="img-rounded profilePic">
-			
-			<ul class="barberDescription">
-				<li><span>Member since:</span> 2010</li>
-				<li><span>Hometown:</span> Bridgeport</li>
-				<li><span>I am a barber because:</span> I am the best barber in town</li>
-				<li><span>My spare time:</span> Ride bike</li>
-				<li><span>Haircut Availability:</span></li>
-			</ul>	
+			{{ > team }}
 		</div>
 	</section>
 
 	<section class="calendarbg">
-		<div class="container containerbarberprofile">
-		<h2>Book your appointment</h2>
-			{{ #if currentUser }}
-				{{ > insertCalEvent }}
-				{{> main}}
-			{{ else }}
-				<div class="container"> 
-					{{> loginButtons}}
-				</div>
-			{{ /if }}
-		</div>
+		{{ > bookAppointment }}
 	</section>
 </template>
