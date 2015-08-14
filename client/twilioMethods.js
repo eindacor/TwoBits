@@ -15,14 +15,6 @@ Template.twilioTest.events({
 	'click #checkForNew': function () {
 		var user_number = '16098928262';
 		Meteor.call('checktwilio', user_number);
-	}
-});
- 
- 
-//var checkNewMessage = function (){
-		// var user_number = '12037528089';
-		// Meteor.call('checktwilio', user_number);
-//};
 	},
 
 	'click #test-button': function() {

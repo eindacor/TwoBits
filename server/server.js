@@ -57,12 +57,4 @@ Meteor.methods({
             console.log("no new messages");
         }
     },
-
-    HTTP.post(twilioBaseUrl + '/Accounts/' + twilioAccountSid + '/Messages', {  
-    auth: twilioAccountSid + ':' + twilioAuthToken,
-    params: {
-                From: twilioFromNumber,
-                To: toNumber,
-                Body: body
-            }
 });
