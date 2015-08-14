@@ -155,6 +155,18 @@ var extractTime = function(date_string, am_pm) {
 		return extractTime(date_string.substr(0, first_index), 'am');
 	}
 
+	// 2 at night
+	if (getIndicesOfPhrase(string_lower, 'at night').first != -1) {
+		var first_index = getIndicesOfPhrase(string_lower, 'at night').first;
+		return extractTime(date_string.substr(0, first_index), 'pm');
+	}
+
+	// 8 in the morning
+	if (getIndicesOfPhrase(string_lower, 'in the morning').first != -1) {
+		var first_index = getIndicesOfPhrase(string_lower, 'in the morning').first;
+		return extractTime(date_string.substr(0, first_index), 'am');
+	}
+
 	// "@3:30"
 	if (getIndicesOfPhrase(string_lower, '@').first != -1) {
 		var end_index = getIndicesOfPhrase(string_lower, '@').end;
@@ -277,7 +289,7 @@ var extractDate = function(date_string) {
 		for (var i = 0; i < date_string.length; i++) {	
 			console.log("!isNaN(" + date_string[i] + "): " + !isNaN(date_string[i]))
 
-			if (date_string[i] == ' ') {
+			if (date_string[i] == ' ' || date_string[i] == ',') {
 				if (slash_found)
 					break;
 
@@ -311,7 +323,7 @@ var extractDate = function(date_string) {
 			var number_found = false;
 			var number_string = "";
 			for (var i = 0; i < string_contents_after_month.length; i++) {
-				if (string_contents_after_month[i] == ' ') {
+				if (string_contents_after_month[i] == ' ' || string_contents_after_month[i] == ',') {
 					if (number_found)
 						break;
 				}
