@@ -16,19 +16,22 @@ Template.twilioTest.events({
 		//var date_string = "tomorrow October at 8am 2008";
 		console.log('original: ' + date_string);
 
-		console.log(getMonthFromInt(extractMonth(date_string).extracted));
+		var entered_moment = moment();
+
+		entered_moment.month(extractMonth(date_string).extracted);
 		date_string = extractMonth(date_string).revised;
 
-		console.log(extractYear(date_string).extracted);
+		entered_moment.year(extractYear(date_string).extracted);
 		date_string = extractYear(date_string).revised;
 
-		console.log(getDayOfWeekFromInt(extractDay(date_string).extracted));
+		entered_moment.day(extractDay(date_string).extracted);
 		date_string = extractDay(date_string).revised;
 
 		var time_object = extractTime(date_string, 'am');
-		console.log(time_object);
-		console.log(time_object.hour());
-		console.log(time_object.minute());
+
+		entered_moment.hour(time_object.hour());
+		entered_moment.minute(time_object.minute());
+		console.log(entered_moment);
 	}
 });
 
@@ -159,164 +162,140 @@ var extractPhrase = function(string_to_search, phrase_to_extract) {
 	else return string_to_search;
 }
 
+var extractPhrases = function(string_to_search, phrases_to_extract) {
+	var string_lower = string_to_search.toLowerCase();
+	var revised_string = string_to_search;
+	for (var i = 0; i < phrases_to_extract.length; i++) {
+		var phrase_lower = phrases_to_extract[i].toLowerCase();
+		var revised_lower = revised_string.toLowerCase();
+		if (getIndicesOfPhrase(revised_lower, phrase_lower).first != -1) {
+			var index_object = getIndicesOfPhrase(revised_lower, phrase_lower);
+			revised_string = revised_string.substr(0, index_object.first) + revised_string.substr(index_object.end);
+		}
+	}
+
+	return revised_string;
+}
+
+var stringContainsAnyPhrase = function(string_to_search, phrases_to_check) {
+	var string_lower = string_to_search.toLowerCase();
+	for (var i = 0; i < phrases_to_check.length; i++) {
+		var phrase_lower = phrases_to_check[i].toLowerCase();
+		if (string_lower.indexOf(phrase_lower) != -1)
+			return true;
+	}
+
+	return false;
+}
+
 var extractMonth = function(date_string) {
 	var date_string_lower = date_string.toLowerCase();
-	if (extractPhrase(date_string_lower, 'january') != date_string_lower) {
-		var return_object = {
-			'extracted': 0,
-			'revised' : extractPhrase(date_string_lower, 'january')
-		}
-		return return_object;
-	}
+	var phrases_to_check = ['january', 'jan'];
+	var month_return = 0;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
+	
+	phrases_to_check = ['february', 'feb'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'february') != date_string_lower) {
-		var return_object = {
-			'extracted': 1,
-			'revised' : extractPhrase(date_string_lower, 'february')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['march', 'mar'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'march') != date_string_lower) {
-		var return_object = {
-			'extracted': 2,
-			'revised' : extractPhrase(date_string_lower, 'march')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['april', 'apr'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'april') != date_string_lower) {
-		var return_object = {
-			'extracted': 3,
-			'revised' : extractPhrase(date_string_lower, 'april')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['may'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'may') != date_string_lower) {
-		var return_object = {
-			'extracted': 4,
-			'revised' : extractPhrase(date_string_lower, 'may')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['june', 'jun'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'june') != date_string_lower) {
-		var return_object = {
-			'extracted': 5,
-			'revised' : extractPhrase(date_string_lower, 'june')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['july', 'jul'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'july') != date_string_lower) {
-		var return_object = {
-			'extracted': 6,
-			'revised' : extractPhrase(date_string_lower, 'july')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['august', 'aug'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'august') != date_string_lower) {
-		var return_object = {
-			'extracted': 7,
-			'revised' : extractPhrase(date_string_lower, 'august')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['september', 'sep', 'sept'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'september') != date_string_lower) {
-		var return_object = {
-			'extracted': 8,
-			'revised' : extractPhrase(date_string_lower, 'september')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['october', 'oct'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'october') != date_string_lower) {
-		var return_object = {
-			'extracted': 9,
-			'revised' : extractPhrase(date_string_lower, 'october')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['november', 'nov'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'november') != date_string_lower) {
-		var return_object = {
-			'extracted': 10,
-			'revised' : extractPhrase(date_string_lower, 'november')
-		}
-		return return_object;
-	}
-
-	if (extractPhrase(date_string_lower, 'december') != date_string_lower) {
-		var return_object = {
-			'extracted': 11,
-			'revised' : extractPhrase(date_string_lower, 'december')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['december', 'dec'];
+	month_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
 	return {'extracted': moment().month(), 'revised': date_string}
 }
 
+var extractDayOfMonth = function(date_string, start_end) {
+	if (getIndicesOfPhrase(string_lower, 'nd').first != -1) {
+		var first_index = getIndicesOfPhrase(string_lower, 'nd').first;
+		return extractDayOfMonth(date_string.substr(first_index), am_pm);
+	}
+}
+
 var extractDay = function(date_string) {
 	var date_string_lower = date_string.toLowerCase();
-	if (extractPhrase(date_string_lower, 'sunday') != date_string_lower) {
-		var return_object = {
-			'extracted': 0,
-			'revised' : extractPhrase(date_string_lower, 'sunday')
-		}
-		return return_object;
-	}
+	var phrases_to_check = ['sunday', 'sun'];
+	var day_return = 0;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
+	
+	phrases_to_check = ['monday', 'mon'];
+	day_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
+	
+	phrases_to_check = ['monday', 'mon'];
+	day_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'monday') != date_string_lower) {
-		var return_object = {
-			'extracted': 1,
-			'revised' : extractPhrase(date_string_lower, 'monday')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['monday', 'mon'];
+	day_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'tuesday') != date_string_lower) {
-		var return_object = {
-			'extracted': 2,
-			'revised' : extractPhrase(date_string_lower, 'tuesday')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['monday', 'mon'];
+	day_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'wednesday') != date_string_lower) {
-		var return_object = {
-			'extracted': 3,
-			'revised' : extractPhrase(date_string_lower, 'wednesday')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['monday', 'mon'];
+	day_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'thursday') != date_string_lower) {
-		var return_object = {
-			'extracted': 4,
-			'revised' : extractPhrase(date_string_lower, 'thursday')
-		}
-		return return_object;
-	}
-
-	if (extractPhrase(date_string_lower, 'friday') != date_string_lower) {
-		var return_object = {
-			'extracted': 5,
-			'revised' : extractPhrase(date_string_lower, 'friday')
-		}
-		return return_object;
-	}
-
-	if (extractPhrase(date_string_lower, 'saturday') != date_string_lower) {
-		var return_object = {
-			'extracted': 6,
-			'revised' : extractPhrase(date_string_lower, 'saturday')
-		}
-		return return_object;
-	}
+	phrases_to_check = ['monday', 'mon'];
+	day_return++;
+	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
 	if (extractPhrase(date_string_lower, 'today') != date_string_lower) {
 		var return_object = {
