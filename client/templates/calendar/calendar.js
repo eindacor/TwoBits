@@ -36,10 +36,12 @@ Template.insertCalEvent.helpers({
 
 Template.dialog.helpers({
 	title: function(){
-		var ce = CalEvent.findOne({_id:Session.get('editing_event')});
-		console.log(Session.get('editing_event'));
-		console.log(ce);
-		return ce.title;
+		if (CalEvent.find({_id: Session.get('editing_event')}).count() > 0) {
+			var ce = CalEvent.findOne({_id: Session.get('editing_event')});
+			return ce.title;
+		}
+
+		else return '';
 	},
 	showDialogModal: function() {
 		return Session.get('showDialogModal') == "true";
@@ -59,12 +61,12 @@ Template.dialog.rendered = function (){
 	Template.main.rendered = function(){
 		var calendar = $('#calendar').fullCalendar({ 
 			dayClick:function(date,allDay,jsEvent,view){
+				console.log(date);
 				Session.set('date', date);
 				Session.set('showDialogModal', "true");
 			},
 
 			eventClick:function(calEvent,jsEvent,view){
-				console.log("this works");
 				Session.set('editing_event', calEvent._id);
 				$('#title').val(calEvent.title);
 			},
