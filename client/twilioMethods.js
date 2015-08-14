@@ -1,11 +1,11 @@
-Template.twilioTest.rendered = function() {
+Template.textParse.rendered = function() {
 	//users_number = getCurrentUserNumber();
 	var user_number = '16098928262';
 	Meteor.call('getMessages', user_number);
 	Session.set('display_result', false);
 }
 
-Template.twilioTest.helpers({
+Template.textParse.helpers({
 	'entered_date' : function () {
 		var date_info = {
 			'day_of_week': Session.get('day_of_week_entered'),
@@ -23,7 +23,7 @@ Template.twilioTest.helpers({
 	}
 })
 
-Template.twilioTest.events({
+Template.textParse.events({
 	'click #response-test': function () {
 		var user_number = '16098928262';
 		// var user_number = '12037528089';
