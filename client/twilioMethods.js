@@ -2,7 +2,26 @@ Template.twilioTest.rendered = function() {
 	//users_number = getCurrentUserNumber();
 	var user_number = '16098928262';
 	Meteor.call('getMessages', user_number);
+	Session.set('display_result', false);
 }
+
+Template.twilioTest.helpers({
+	'entered_date' : function () {
+		var date_info = {
+			'day_of_week': Session.get('day_of_week_entered'),
+			'day': Session.get('day_entered'),
+			'month': Session.get('month_entered'),
+			'year': Session.get('year_entered'),
+			'hour': Session.get('hour_entered'),
+			'minute': Session.get('minute_entered')
+		}
+		return date_info;
+	},
+
+	'show_result' : function() {
+		return Session.get('display_result');
+	}
+})
 
 Template.twilioTest.events({
 	'click #response-test': function () {
@@ -19,25 +38,40 @@ Template.twilioTest.events({
 		// var test_moment = moment("12/5", "MM-DD-YYYY");
 		// console.log(test_moment);
 
-		var date_specified = dateIsSpecified(date_string);
-		
 		var entered_moment = moment();
 
-		entered_moment.month(extractMonth(date_string).extracted);
-		date_string = extractMonth(date_string).revised;
+		if (dateIsSpecified(date_string)) {
+			entered_moment = extractDate(date_string).extracted;
+			date_string = extractDate(date_string).revised;
+		}
 
-		entered_moment.year(extractYear(date_string).extracted);
-		date_string = extractYear(date_string).revised;
+		else {
+			var day_found = extractDay(date_string).extracted;
+			entered_moment.day((moment().day() > day_found ? day_found + 7 : day_found));
+			date_string = extractDay(date_string).revised;
+		}
 
-		var day_found = extractDay(date_string).extracted;
-		entered_moment.day((moment().day() > day_found ? day_found + 7 : day_found));
-		date_string = extractDay(date_string).revised;
+		// after the date has been identified, determine if a year was specified
+		var year_min = 2000;
+		var year_max = 2100;
+		if (extractYear(date_string, year_min, year_max).extracted != 'none found')
+			entered_moment.year(extractYear(date_string, year_min, year_max).extracted);
 
-		var time_object = extractTime(date_string, (moment().hour() > 12 ? 'pm' : 'am'));
+		date_string = extractYear(date_string, 2000, 2100).revised;
+
+		var time_object = extractTime(date_string, 'pm');
 
 		entered_moment.hour(time_object.hour);
 		entered_moment.minute(time_object.minute);
 		entered_moment.second(0);
+
+		Session.set('day_of_week_entered', getDayOfWeekFromInt(entered_moment.day()));
+		Session.set('day_entered', entered_moment.date());
+		Session.set('month_entered', getMonthFromInt(entered_moment.month()));
+		Session.set('year_entered', entered_moment.year());
+		Session.set('hour_entered', entered_moment.hour());
+		Session.set('minute_entered', (entered_moment.minute() < 10 ? '0' + entered_moment.minute() : entered_moment.minute()));
+		Session.set('display_result', entered_moment.isValid());
 		
 		console.log(entered_moment._d.toString());
 		console.log("-------------");
@@ -81,52 +115,46 @@ var getMonthFromInt = function(month_int) {
 	}
 }
 
-/*
-8/7 at 6
-today 11am
-7:15pm
-7:15 pm
-3 o'clock
-June 3rd noon
-*/
-
+// returns an object containing the hours and minutes specified in the string based on a 24-hour clock
+// if no time is identified, returns 0:00
 var extractTime = function(date_string, am_pm) {
 	var string_lower = date_string.toLowerCase();
-	//noon
+	// "noon"
 	if (getIndicesOfPhrase(string_lower, 'noon').first != -1) {
 		return {'hour': 12, 'minute': 0};
 	}
 
-	//at 12
+	// "at 12"
 	if (getIndicesOfPhrase(string_lower, 'at ').first != -1) {
 		var end_index = getIndicesOfPhrase(string_lower, 'at ').end;
 		return extractTime(date_string.substr(end_index), am_pm);
 	}
 
-	//12 o'clock
+	// "12 o'clock"
 	if (getIndicesOfPhrase(string_lower, "o'clock").first != -1) {
 		var first_index = getIndicesOfPhrase(string_lower, "o'clock").first;
 		return extractTime(date_string.substr(0, first_index), am_pm);
 	}
 
-	//12pm
+	// "12pm"
 	if (getIndicesOfPhrase(string_lower, 'pm').first != -1) {
 		var first_index = getIndicesOfPhrase(string_lower, 'pm').first;
 		return extractTime(date_string.substr(0, first_index), 'pm');
 	}
 
+	// "12am"
 	if (getIndicesOfPhrase(string_lower, 'am').first != -1) {
 		var first_index = getIndicesOfPhrase(string_lower, 'am').first;
 		return extractTime(date_string.substr(0, first_index), 'am');
 	}
 
-	//@3:30
+	// "@3:30"
 	if (getIndicesOfPhrase(string_lower, '@').first != -1) {
 		var end_index = getIndicesOfPhrase(string_lower, '@').end;
 		return extractTime(date_string.substr(end_index), am_pm);
 	}
 
-	//12:15
+	// "12:15"
 	if (string_lower.indexOf(':') != -1) {
 		var hours = parseInt(string_lower.substr(0, string_lower.indexOf(':')));
 		var minutes = parseInt(string_lower.substr(string_lower.indexOf(':') + 1));
@@ -139,8 +167,6 @@ var extractTime = function(date_string, am_pm) {
 
 		return {'hour': hours, 'minute': minutes};
 	}
-
-	//noon
 
 	var reduced_string = "";
 	for (var i = 0; i < string_lower.length; i++) {
@@ -159,6 +185,8 @@ var extractTime = function(date_string, am_pm) {
 	return {'hour': parsed_hour, 'minute': 0};
 }
 
+// finds phrase within the given string, and returns indices 'first', 'last', and 'end'
+// if the phrase is not found, returns -1 for all indices
 var getIndicesOfPhrase = function(string_to_search, phrase_to_find) {
 	var string_lower = string_to_search.toLowerCase();
 	var phrase_lower = phrase_to_find.toLowerCase();
@@ -174,7 +202,8 @@ var getIndicesOfPhrase = function(string_to_search, phrase_to_find) {
 	else return {'first': -1, 'last': -1, 'end': -1};
 }
 
-//
+// returns the string passed without the phrase specified
+// if the phrase is not found, original string is returned
 var extractPhrase = function(string_to_search, phrase_to_extract) {
 	var string_lower = string_to_search.toLowerCase();
 	var phrase_lower = phrase_to_extract.toLowerCase();
@@ -186,6 +215,8 @@ var extractPhrase = function(string_to_search, phrase_to_extract) {
 	else return string_to_search;
 }
 
+// returns the string passed without any of the phrases specified
+// if the phrase is not found, original string is returned
 var extractPhrases = function(string_to_search, phrases_to_extract) {
 	var string_lower = string_to_search.toLowerCase();
 	var revised_string = string_to_search;
@@ -201,6 +232,7 @@ var extractPhrases = function(string_to_search, phrases_to_extract) {
 	return revised_string;
 }
 
+ // returns true if any of the phrases passed are in the string provided
 var stringContainsAnyPhrase = function(string_to_search, phrases_to_check) {
 	var string_lower = string_to_search.toLowerCase();
 	for (var i = 0; i < phrases_to_check.length; i++) {
@@ -212,6 +244,95 @@ var stringContainsAnyPhrase = function(string_to_search, phrases_to_check) {
 	return false;
 }
 
+var getMonthEndIndex = function(date_string) {
+	var month_identifiers = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 
+		'september', 'october', 'november', 'december', 'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 
+		'aug', 'sep', 'oct', 'nov', 'dec'];
+
+	for (var i = 0; i < month_identifiers.length; i++) {
+		if (getIndicesOfPhrase(date_string, month_identifiers[i]).first != -1)
+			return getIndicesOfPhrase(date_string, month_identifiers[i]).end;
+	}
+
+	return -1;
+}
+
+// identifies the date specified in the string, and returns an object
+// containing a date object ('extracted') and the original string with the date
+// identifier(s) sliced ('revised')
+//
+// "the date is February 14th" would return the object {'extracted': <Date object for 2/14/2015>, 'revised': 'the date is '}
+var extractDate = function(date_string) {
+	console.log('date_string: ' + date_string);
+	if (date_string.indexOf('\/') != -1) {
+		var slash_found = false;
+		var slash_string = "";
+		for (var i = 0; i < date_string.length; i++) {	
+			console.log("!isNaN(" + date_string[i] + "): " + !isNaN(date_string[i]))
+
+			if (date_string[i] == ' ') {
+				if (slash_found)
+					break;
+
+				else slash_string = "";
+			}
+
+			else if (!isNaN(date_string[i]) || date_string[i] == '\/')
+				slash_string += date_string[i];
+
+			if ( date_string[i] == '\/')
+				slash_found = true;
+		}
+		console.log('slash_string: ' + slash_string);
+		var test_moment = moment(slash_string, "MM-DD-YYYY");
+		console.log(test_moment);
+
+		return {'extracted': test_moment, 'revised': extractPhrase(date_string, slash_string)}
+	}
+
+	else {
+		var month_identifiers = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+		var month_identified;
+		var revised_string = "";
+
+		if (stringContainsAnyPhrase(date_string, month_identifiers)) {
+			month_identified = extractMonth(date_string).extracted;
+
+			var month_end_index = getMonthEndIndex(date_string);
+			var string_contents_after_month = date_string.substr(month_end_index);
+
+			var number_found = false;
+			var number_string = "";
+			for (var i = 0; i < string_contents_after_month.length; i++) {
+				if (string_contents_after_month[i] == ' ') {
+					if (number_found)
+						break;
+				}
+
+				else if (!isNaN(string_contents_after_month[i])) {
+					number_string += string_contents_after_month[i];
+					number_found = true;
+				}
+			}
+
+			revised_string = extractMonth(date_string).revised;
+			revised_string = extractPhrase(revised_string, number_string);
+
+			var moment_found = moment();
+			moment_found.month(month_identified);
+			moment_found.date(parseInt(number_string));
+			return {'extracted': moment_found, 'revised': revised_string}
+		}
+
+		else return {'extracted': moment(), 'revised': date_string}
+	}
+}
+
+// identifies the month specified in the string, and returns an object
+// containing the month's numeric value ('extracted') and the original string with the month
+// identifier sliced ('revised')
+//
+// "the month is February" would return the object {'extracted': 1, 'revised': 'the month is '}
 var extractMonth = function(date_string) {
 	var date_string_lower = date_string.toLowerCase();
 	var phrases_to_check = ['january', 'jan'];
@@ -277,31 +398,11 @@ var extractMonth = function(date_string) {
 	return {'extracted': moment().month(), 'revised': date_string}
 }
 
-var extractDay = function(date_string) {
-	var date_string_lower = date_string.toLowerCase();
-	if (getIndicesOfPhrase(date_string_lower, 'this').first != -1) {
-		var index_object = getIndicesOfPhrase(date_string_lower, 'this');
-		var day_found = extractDayOfWeek(date_string_lower.substr(index_object.end)).extracted;
-		day_found = ((moment().day() >= day_found ? day_found + 7 : day_found));
-		var revised_string = extractDayOfWeek(date_string_lower.substr(index_object.end)).revised;
-		return {'extracted': day_found, 'revised': extractPhrase(revised_string, 'this')}
-	}
-
-	if (getIndicesOfPhrase(date_string_lower, 'next').first != -1) {
-		var index_object = getIndicesOfPhrase(date_string_lower, 'next');
-		var day_found = extractDayOfWeek(date_string_lower.substr(index_object.end)).extracted;
-		day_found = ((moment().day() > day_found ? day_found + 14 : day_found + 7));
-		var revised_string = extractDayOfWeek(date_string_lower.substr(index_object.end)).revised;
-		return {'extracted': day_found, 'revised': extractPhrase(revised_string, 'next')}
-	}
-
-	return extractDayOfWeek(date_string);
-
-	// var phrases_to_check = ['nd', 'rd', 'st', 'th'];
-	// if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
-	// 	return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
-}
-
+// identifies the day specified in the string, and returns an object
+// containing the day's numeric value ('extracted') and the original string with the day
+// identifier(s) sliced ('revised')
+//
+// "the day is Tuesday" would return the object {'extracted': 2, 'revised': 'the day is '}
 var extractDayOfWeek = function(date_string) {
 	var date_string_lower = date_string.toLowerCase();
 	var phrases_to_check = ['sunday', 'sun'];
@@ -348,10 +449,42 @@ var extractDayOfWeek = function(date_string) {
 	return {'extracted': moment().day(), 'revised': date_string}
 }
 
-var extractYear = function(date_string) {
-	var year_start = 2000;
-	var year_end = 2100;
-	for (var i = year_start; i < year_end; i++) {
+// identifies any day-related qualifiers like "this" or "next", and modifies the 
+// day's numeric value according to the moment.js documentation's specifications
+// relevant documentation: http://momentjs.com/docs/#/get-set/day/
+//
+// "some time next Tuesday" would return the object {'extracted': 9, 'revised': 'some time '}
+var extractDay = function(date_string) {
+	var date_string_lower = date_string.toLowerCase();
+	if (getIndicesOfPhrase(date_string_lower, 'this').first != -1) {
+		var index_object = getIndicesOfPhrase(date_string_lower, 'this');
+		var day_found = extractDayOfWeek(date_string_lower.substr(index_object.end)).extracted;
+		day_found = ((moment().day() >= day_found ? day_found + 7 : day_found));
+		var revised_string = extractDayOfWeek(date_string_lower.substr(index_object.end)).revised;
+		return {'extracted': day_found, 'revised': extractPhrase(revised_string, 'this')}
+	}
+
+	if (getIndicesOfPhrase(date_string_lower, 'next').first != -1) {
+		var index_object = getIndicesOfPhrase(date_string_lower, 'next');
+		var day_found = extractDayOfWeek(date_string_lower.substr(index_object.end)).extracted;
+		day_found = ((moment().day() > day_found ? day_found + 14 : day_found + 7));
+		var revised_string = extractDayOfWeek(date_string_lower.substr(index_object.end)).revised;
+		return {'extracted': day_found, 'revised': extractPhrase(revised_string, 'next')}
+	}
+
+	return extractDayOfWeek(date_string);
+}
+
+// identifies the year specified in the string, and returns an object
+// containing the year as a number ('extracted') and the original string with the year
+// identifier sliced ('revised')
+//
+// "the year is 2011" would return the object {'extracted': 2011, 'revised': 'the year is '}
+// only if 2011 is withing the bounds provided
+//
+// if no year is identified within the range, this method will return the current year
+var extractYear = function(date_string, search_start, search_end) {
+	for (var i = search_start; i < search_end; i++) {
 		if (extractPhrase(date_string, i.toString()) != date_string) {
 			var return_object = {
 				'extracted': i,
@@ -361,5 +494,5 @@ var extractYear = function(date_string) {
 		}
 	}
 
-	return {'extracted': moment().year(), 'revised': date_string};
+	return {'extracted': 'none found', 'revised': date_string};
 }
