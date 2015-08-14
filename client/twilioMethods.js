@@ -10,5 +10,16 @@ Template.twilioTest.events({
 		var user_number = '12037528089';
 		Meteor.call('sendMessage', user_number);
 		console.log('sending message');
+	},
+
+	'click #checkForNew': function () {
+		var user_number = '16098928262';
+		Meteor.call('checktwilio', user_number);
 	}
 });
+ 
+ 
+//var checkNewMessage = function (){
+		// var user_number = '12037528089';
+		// Meteor.call('checktwilio', user_number);
+//};
