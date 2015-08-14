@@ -13,9 +13,14 @@ Template.twilioTest.events({
 
 	'click #test-button': function() {
 		var date_string = $('#string-enter').val();
-		//var date_string = "tomorrow October at 8am 2008";
+
 		console.log('original: ' + date_string);
 
+		// var test_moment = moment("12/5", "MM-DD-YYYY");
+		// console.log(test_moment);
+
+		var date_specified = dateIsSpecified(date_string);
+		
 		var entered_moment = moment();
 
 		entered_moment.month(extractMonth(date_string).extracted);
@@ -24,16 +29,26 @@ Template.twilioTest.events({
 		entered_moment.year(extractYear(date_string).extracted);
 		date_string = extractYear(date_string).revised;
 
-		entered_moment.day(extractDay(date_string).extracted);
+		var day_found = extractDay(date_string).extracted;
+		entered_moment.day((moment().day() > day_found ? day_found + 7 : day_found));
 		date_string = extractDay(date_string).revised;
 
-		var time_object = extractTime(date_string, 'am');
+		var time_object = extractTime(date_string, (moment().hour() > 12 ? 'pm' : 'am'));
 
-		entered_moment.hour(time_object.hour());
-		entered_moment.minute(time_object.minute());
-		console.log(entered_moment);
+		entered_moment.hour(time_object.hour);
+		entered_moment.minute(time_object.minute);
+		entered_moment.second(0);
+		
+		console.log(entered_moment._d.toString());
+		console.log("-------------");
 	}
 });
+
+var dateIsSpecified = function(date_string) {
+	var date_indicators = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', '\/', 
+	'1st', '2nd', '2th', '3rd', '3th', '4th', '5th', '6th', '7th', '8th', '19th', '0th'];
+	return stringContainsAnyPhrase(date_string, date_indicators);
+}
 
 var getDayOfWeekFromInt = function(day_int) {
 	switch(day_int) {
@@ -67,26 +82,21 @@ var getMonthFromInt = function(month_int) {
 }
 
 /*
-tomorrow at 7
-this tuesday 5pm
 8/7 at 6
-next friday 10
 today 11am
 7:15pm
 7:15 pm
 3 o'clock
 June 3rd noon
-
-at 12
-12 o'clock
-12pm
-12:15
-noon
-@12
 */
 
 var extractTime = function(date_string, am_pm) {
 	var string_lower = date_string.toLowerCase();
+	//noon
+	if (getIndicesOfPhrase(string_lower, 'noon').first != -1) {
+		return {'hour': 12, 'minute': 0};
+	}
+
 	//at 12
 	if (getIndicesOfPhrase(string_lower, 'at ').first != -1) {
 		var end_index = getIndicesOfPhrase(string_lower, 'at ').end;
@@ -100,14 +110,14 @@ var extractTime = function(date_string, am_pm) {
 	}
 
 	//12pm
-	if (getIndicesOfPhrase(string_lower, "pm").first != -1) {
-		var first_index = getIndicesOfPhrase(string_lower, "pm").first;
+	if (getIndicesOfPhrase(string_lower, 'pm').first != -1) {
+		var first_index = getIndicesOfPhrase(string_lower, 'pm').first;
 		return extractTime(date_string.substr(0, first_index), 'pm');
 	}
 
-	if (getIndicesOfPhrase(string_lower, "am").first != -1) {
-		var first_index = getIndicesOfPhrase(string_lower, "am").first;
-		return extractTime(date_string.substr(0, first_index), am_pm);
+	if (getIndicesOfPhrase(string_lower, 'am').first != -1) {
+		var first_index = getIndicesOfPhrase(string_lower, 'am').first;
+		return extractTime(date_string.substr(0, first_index), 'am');
 	}
 
 	//@3:30
@@ -118,21 +128,35 @@ var extractTime = function(date_string, am_pm) {
 
 	//12:15
 	if (string_lower.indexOf(':') != -1) {
-		//moment({hour: 5, minute: 10});
 		var hours = parseInt(string_lower.substr(0, string_lower.indexOf(':')));
 		var minutes = parseInt(string_lower.substr(string_lower.indexOf(':') + 1));
 
-		if (am_pm == 'pm')
+		if (hours == 12 && am_pm == 'am')
+			hours = 0;
+
+		if (hours != 12 && am_pm == 'pm')
 			hours += 12;
 
-		return moment({hour: hours, minute: minutes});
+		return {'hour': hours, 'minute': minutes};
 	}
 
 	//noon
 
+	var reduced_string = "";
+	for (var i = 0; i < string_lower.length; i++) {
+		if (!isNaN(string_lower[i]) && string_lower[i] != ' ')
+			reduced_string += string_lower[i];
+	}
 
+	var parsed_hour = (reduced_string.length == 0 ? 0 : parseInt(reduced_string));
 
-	return moment({hour: parseInt(date_string)});; 
+	if (parsed_hour == 12 && am_pm == 'am')
+		parsed_hour = 0;
+
+	if (parsed_hour != 12 && am_pm == 'pm')
+		parsed_hour += 12;
+
+	return {'hour': parsed_hour, 'minute': 0};
 }
 
 var getIndicesOfPhrase = function(string_to_search, phrase_to_find) {
@@ -253,14 +277,32 @@ var extractMonth = function(date_string) {
 	return {'extracted': moment().month(), 'revised': date_string}
 }
 
-var extractDayOfMonth = function(date_string, start_end) {
-	if (getIndicesOfPhrase(string_lower, 'nd').first != -1) {
-		var first_index = getIndicesOfPhrase(string_lower, 'nd').first;
-		return extractDayOfMonth(date_string.substr(first_index), am_pm);
+var extractDay = function(date_string) {
+	var date_string_lower = date_string.toLowerCase();
+	if (getIndicesOfPhrase(date_string_lower, 'this').first != -1) {
+		var index_object = getIndicesOfPhrase(date_string_lower, 'this');
+		var day_found = extractDayOfWeek(date_string_lower.substr(index_object.end)).extracted;
+		day_found = ((moment().day() >= day_found ? day_found + 7 : day_found));
+		var revised_string = extractDayOfWeek(date_string_lower.substr(index_object.end)).revised;
+		return {'extracted': day_found, 'revised': extractPhrase(revised_string, 'this')}
 	}
+
+	if (getIndicesOfPhrase(date_string_lower, 'next').first != -1) {
+		var index_object = getIndicesOfPhrase(date_string_lower, 'next');
+		var day_found = extractDayOfWeek(date_string_lower.substr(index_object.end)).extracted;
+		day_found = ((moment().day() > day_found ? day_found + 14 : day_found + 7));
+		var revised_string = extractDayOfWeek(date_string_lower.substr(index_object.end)).revised;
+		return {'extracted': day_found, 'revised': extractPhrase(revised_string, 'next')}
+	}
+
+	return extractDayOfWeek(date_string);
+
+	// var phrases_to_check = ['nd', 'rd', 'st', 'th'];
+	// if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
+	// 	return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 }
 
-var extractDay = function(date_string) {
+var extractDayOfWeek = function(date_string) {
 	var date_string_lower = date_string.toLowerCase();
 	var phrases_to_check = ['sunday', 'sun'];
 	var day_return = 0;
@@ -272,46 +314,36 @@ var extractDay = function(date_string) {
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
 		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 	
-	phrases_to_check = ['monday', 'mon'];
+	phrases_to_check = ['tuesday', 'tues', 'tue'];
 	day_return++;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
 		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	phrases_to_check = ['monday', 'mon'];
+	phrases_to_check = ['wednesday', 'weds', 'wed'];
 	day_return++;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
-		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
+		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	phrases_to_check = ['monday', 'mon'];
+	phrases_to_check = ['thursday', 'thurs'];
 	day_return++;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
-		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
+		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	phrases_to_check = ['monday', 'mon'];
+	phrases_to_check = ['friday', 'fri'];
 	day_return++;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
-		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
+		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	phrases_to_check = ['monday', 'mon'];
+	phrases_to_check = ['saturday', 'sat'];
 	day_return++;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
-		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
+		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
 
-	if (extractPhrase(date_string_lower, 'today') != date_string_lower) {
-		var return_object = {
-			'extracted': moment().day(),
-			'revised' : extractPhrase(date_string_lower, 'today')
-		}
-		return return_object;
-	}
+	if (stringContainsAnyPhrase(date_string_lower, ['today', 'tonight']))
+		return {'extracted': moment().day(), 'revised': extractPhrases(date_string_lower, ['today', 'tonight'])}
 
-	if (extractPhrase(date_string_lower, 'tomorrow') != date_string_lower) {
-		var return_object = {
-			'extracted': (moment().day() == 6 ? 0 : moment().day() + 1),
-			'revised' : extractPhrase(date_string_lower, 'tomorrow')
-		}
-		return return_object;
-	}
+	if (stringContainsAnyPhrase(date_string_lower, ['tomorrow']))
+		return {'extracted': moment().day() + 1, 'revised': extractPhrase(date_string_lower, 'tomorrow')}
 
 	return {'extracted': moment().day(), 'revised': date_string}
 }
