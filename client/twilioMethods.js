@@ -41,16 +41,15 @@ Template.twilioTest.events({
 
 		console.log('original: ' + date_string);
 
-		// var test_moment = moment("12/5", "MM-DD-YYYY");
-		// console.log(test_moment);
-
 		var entered_moment = moment();
 
+		// determine whether the date has been specified based on keywords
 		if (dateIsSpecified(date_string)) {
 			entered_moment = extractDate(date_string).extracted;
 			date_string = extractDate(date_string).revised;
 		}
 
+		// if it has not, determine what day is implied by the text
 		else {
 			var day_found = extractDay(date_string).extracted;
 			entered_moment.day((moment().day() > day_found ? day_found + 7 : day_found));
@@ -71,6 +70,7 @@ Template.twilioTest.events({
 		entered_moment.minute(time_object.minute);
 		entered_moment.second(0);
 
+		// set session variables to update helpers
 		Session.set('day_of_week_entered', getDayOfWeekFromInt(entered_moment.day()));
 		Session.set('day_entered', entered_moment.date());
 		Session.set('month_entered', getMonthFromInt(entered_moment.month()));
@@ -84,6 +84,7 @@ Template.twilioTest.events({
 	}
 });
 
+// determines whether the date has been specified based on keywords
 var dateIsSpecified = function(date_string) {
 	var date_indicators = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', '\/', 
 	'1st', '2nd', '2th', '3rd', '3th', '4th', '5th', '6th', '7th', '8th', '19th', '0th'];
