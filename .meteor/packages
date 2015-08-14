@@ -14,3 +14,4 @@ accounts-password
 accounts-ui
 mrt:twilio-meteor
 iron:router
+momentjs:moment
