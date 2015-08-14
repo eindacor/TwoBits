@@ -1,4 +1,5 @@
-Meteor.methods({
+var previousCount = -1;
+Meteor.methods({ 
     'getMessages' : function(user_number) {
         var twilio = Twilio("AC789aba0503b38a38b2b186f5004cbc5a", "2761b8b6fd7eedfc9d7345e3f992553b");
         twilio.listSms({
@@ -28,5 +29,32 @@ Meteor.methods({
                     console.log(responseData.body); // outputs "word to your mother."
                 }
         });
-    }
+    },
+
+    'checktwilio' : function(phoneNumber) {
+        var twilio = Twilio("AC789aba0503b38a38b2b186f5004cbc5a", "2761b8b6fd7eedfc9d7345e3f992553b");
+        var currentCount;
+        twilio.listSms({
+            from:'+' + phoneNumber  
+        }, function (err, responseData) {
+            //Meteor.call('sendMessage', 'message count: ' + responseData.smsMessages.length);
+            console.log('message count: ' + responseData.smsMessages.length);
+            currentCount = responseData.smsMessages.length;
+        });
+
+        if (previousCount == -1) {
+            previousCount = currentCount;
+            console.log("initial count set");
+        }
+
+        else if (previousCount != currentCount){
+            var countsMatch = false;
+            console.log("new message found");
+            previousCount = currentCount;
+        }
+
+        else {
+            console.log("no new messages");
+        }
+    },
 });
