@@ -256,12 +256,17 @@ var stringContainsAnyPhrase = function(string_to_search, phrases_to_check) {
 	var string_lower = string_to_search.toLowerCase();
 	for (var i = 0; i < phrases_to_check.length; i++) {
 		var phrase_lower = phrases_to_check[i].toLowerCase();
+
 		if (string_lower.indexOf(phrase_lower) != -1)
 			return true;
 	}
 
 	return false;
 }
+
+var some_string = "this is a cool string";
+var index_of_word = some_string.indexOf('cool');
+
 
 var getMonthEndIndex = function(date_string) {
 	var month_identifiers = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 
