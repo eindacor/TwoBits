@@ -286,25 +286,28 @@ var extractDate = function(date_string) {
 	if (date_string.indexOf('\/') != -1) {
 		var slash_found = false;
 		var slash_string = "";
+		// iterate through string, adding any numbers or slashes found
 		for (var i = 0; i < date_string.length; i++) {	
 			console.log("!isNaN(" + date_string[i] + "): " + !isNaN(date_string[i]))
 
 			if (date_string[i] == ' ' || date_string[i] == ',') {
+				// if a slash has been found and there is a break in the characters, end loop
 				if (slash_found)
 					break;
 
 				else slash_string = "";
 			}
 
+			// add numbers and slashes to slash_string
 			else if (!isNaN(date_string[i]) || date_string[i] == '\/')
 				slash_string += date_string[i];
 
 			if ( date_string[i] == '\/')
 				slash_found = true;
 		}
-		console.log('slash_string: ' + slash_string);
+
+		// create moment using moment.js
 		var test_moment = moment(slash_string, "MM-DD-YYYY");
-		console.log(test_moment);
 
 		return {'extracted': test_moment, 'revised': extractPhrase(date_string, slash_string)}
 	}
