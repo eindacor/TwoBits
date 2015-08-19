@@ -15,7 +15,7 @@ Template.dialog.events({
 			"owner": Meteor.userId(),
 			"barber": Session.get('barberName')
 		}
-		CalEvent.insert(calObject)
+		CalEvent.insert(calObject);
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
 		Session.set('barberName', null)

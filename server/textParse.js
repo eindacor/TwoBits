@@ -1,6 +1,8 @@
 getDateFromString = function(date_string) {
 	var entered_moment = moment();
-
+	console.log(date_string);
+	date_string = date_string.replace(/\n/g, ' ');
+	console.log(date_string);
 	// determine whether the date has been specified based on keywords
 	if (dateIsSpecified(date_string)) {
 		entered_moment = extractDate(date_string).extracted;
@@ -36,37 +38,6 @@ var dateIsSpecified = function(date_string) {
 	var date_indicators = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', '\/', 
 	'1st', '2nd', '2th', '3rd', '3th', '4th', '5th', '6th', '7th', '8th', '19th', '0th'];
 	return stringContainsAnyPhrase(date_string, date_indicators);
-}
-
-var getDayOfWeekFromInt = function(day_int) {
-	switch(day_int) {
-		case 0: return "Sunday";
-		case 1: return "Monday";
-		case 2: return "Tuesday";
-		case 3: return "Wednesday";
-		case 4: return "Thursday";
-		case 5: return "Friday";
-		case 6: return "Saturday";
-		default: return "INVALID_DAY";
-	}
-}
-
-var getMonthFromInt = function(month_int) {
-	switch(month_int) {
-		case 0: return "January";
-		case 1: return "February";
-		case 2: return "March";
-		case 3: return "April";
-		case 4: return "May";
-		case 5: return "June";
-		case 6: return "July";
-		case 7: return "August";
-		case 8: return "September";
-		case 9: return "October";
-		case 10: return "November";
-		case 11: return "December";
-		default: return "INVALID_MONTH";
-	}
 }
 
 // returns an object containing the hours and minutes specified in the string based on a 24-hour clock
@@ -234,14 +205,11 @@ var getMonthEndIndex = function(date_string) {
 //
 // "the date is February 14th" would return the object {'extracted': <Date object for 2/14/2015>, 'revised': 'the date is '}
 var extractDate = function(date_string) {
-	console.log('date_string: ' + date_string);
 	if (date_string.indexOf('\/') != -1) {
 		var slash_found = false;
 		var slash_string = "";
 		// iterate through string, adding any numbers or slashes found
 		for (var i = 0; i < date_string.length; i++) {	
-			console.log("!isNaN(" + date_string[i] + "): " + !isNaN(date_string[i]))
-
 			if (date_string[i] == ' ' || date_string[i] == ',') {
 				// if a slash has been found and there is a break in the characters, end loop
 				if (slash_found)

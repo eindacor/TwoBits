@@ -18,3 +18,7 @@ Template.team.events({
 
 	}
 });
+
+Template.textParse.rendered = function() {
+	console.log(Meteor.userId());
+}
