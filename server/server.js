@@ -1,5 +1,55 @@
-var getUserIdFromPhoneNumber = function(phone_number) {
+var getNameFromPhoneNumber = function(phone_number) {
     var modified_number = phone_number.replace(/-/g, '');
+
+    return "John Smith";
+}
+
+var getUserIdFromPhoneNumber = function(phone_number) {
+    return "zCHb4oFZtwEH4HrjQ";
+}
+
+var getFormattedStringFromDate = function(date_object) {
+    var return_string = "";
+
+    switch(date_object.day()) {
+        case 0: return_string += "Sunday"; break;
+        case 1: return_string += "Monday"; break;
+        case 2: return_string += "Tuesday"; break;
+        case 3: return_string += "Wednesday"; break;
+        case 4: return_string += "Thursday"; break;
+        case 5: return_string += "Friday"; break;
+        case 6: return_string += "Saturday"; break;
+        default: return_string += "INVALID_DAY"; break;
+    }
+
+    return_string += ", ";
+
+    switch(date_object.month()) {
+        case 0: return_string += "January"; break;
+        case 1: return_string += "February"; break;
+        case 2: return_string += "March"; break;
+        case 3: return_string += "April"; break;
+        case 4: return_string += "May"; break;
+        case 5: return_string += "June"; break;
+        case 6: return_string += "July"; break;
+        case 7: return_string += "August"; break;
+        case 8: return_string += "September"; break;
+        case 9: return_string += "October"; break;
+        case 10: return_string += "November"; break;
+        case 11: return_string += "December"; break;
+        default: return_string += "INVALID_MONTH"; break;
+    }
+
+    return_string += " " + date_object.date() +' at ';
+
+    var hour_string = date_object.hour() % 12;
+    if (hour_string == 0)
+        hour_string = 12;
+
+    var am_pm = (date_object.hour() >= 12 ? 'pm' : 'am');
+
+    return_string += hour_string + ':' + (date_object.minute() < 10 ? '0' + date_object.minute() : date_object.minute()) + am_pm;
+    return return_string;
 }
 
 if (Meteor.isServer) {
@@ -20,44 +70,55 @@ if (Meteor.isServer) {
         var caller = this.request.body.From;
         var message = this.request.body.Body;
 
-        var dateTest = getDateFromString(message);
+        if (caller == '+12037528089') {
+            var temp_reservations = temp_CalEvent.find({});
 
-        var hour_string = dateTest.hour() % 12;
-        if (hour_string == 0)
-            hour_string = 12;
-
-        var am_pm = (dateTest.hour() >= 12 ? 'pm' : 'am');
-
-        var time_string = hour_string + ':' + (dateTest.minute() < 10 ? '0' + dateTest.minute() : dateTest.minute()) + am_pm;
-
-        //console.log(Meteor.userId());
-
-        var barbers = ['TJ','Kevin','Mikey','VJ', 'Bob', 'Rico', 'Larry', 'Dante', 'Rosco', 'Eli'];
-        var barber_index = Math.floor(Math.random() * (barbers.length - 1));
-
-        var calObject = {
-            "title": "Appointment with " + barbers[barber_index] + " at " + time_string,
-            "start": dateTest._d,
-            "end": dateTest._d,
-            "owner": "zCHb4oFZtwEH4HrjQ",
-            "barber":  barbers[barber_index]
+            temp_reservations.forEach( function(temp_reservation) {
+                CalEvent.insert(temp_reservation);
+                var temp_id = temp_reservation._id;
+                temp_CalEvent.remove({'_id': temp_id});
+            });
         }
 
-        CalEvent.insert(calObject);
+        else {
+            var dateTest = getDateFromString(message);
 
-        twilio.sendSms({
-            to: caller,
-            from: '+16195522487',
-            body: 'date added to calendar: ' + dateTest.toString()
-        }, function(err, responseData) {
-            if (!err) {
-                console.log(responseData.from);
-                console.log(responseData.body);
-                console.log(responseData);
+            var hour_string = dateTest.hour() % 12;
+            if (hour_string == 0)
+                hour_string = 12;
+
+            var am_pm = (dateTest.hour() >= 12 ? 'pm' : 'am');
+
+            var time_string = hour_string + ':' + (dateTest.minute() < 10 ? '0' + dateTest.minute() : dateTest.minute()) + am_pm;
+
+            var customers = ['TJ Johnson','Kevin Robinson','Mikey Belushi','VJ Impastato', 'Bob Verhoff', 'Rico Suave', 'Larry David', 'Dante Bernette', 'Rosco Bosco', 'Eli Roman'];
+            var customer_index = Math.floor(Math.random() * (customers.length - 1));
+
+            var calObject = {
+                "title": customers[customer_index] + " - " + time_string,
+                "start": dateTest._d,
+                "end": dateTest._d,
+                "owner": getUserIdFromPhoneNumber(caller),
+                "barber":  'Eddie'
             }
-        });
-    });
 
+            temp_CalEvent.insert(calObject);
+
+            twilio.sendSms({
+                to: '+12037528089',
+                from: '+16195522487',
+                body: customers[customer_index] + ' has requested an appoinment on ' + getFormattedStringFromDate(dateTest) + '. Please confirm.'
+            }, 
+
+            function(err, responseData) {
+                if (!err) {
+                    console.log(responseData.from);
+                    console.log(responseData.body);
+                    console.log(responseData);
+                }
+            });
+        }
+    });
 }
 
 Meteor.methods({
