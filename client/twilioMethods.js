@@ -78,7 +78,7 @@ Template.textParse.events({
 		Session.set('hour_entered', entered_moment.hour());
 		Session.set('minute_entered', (entered_moment.minute() < 10 ? '0' + entered_moment.minute() : entered_moment.minute()));
 		Session.set('display_result', entered_moment.isValid());
-		
+
 		console.log(entered_moment._d.toString());
 		console.log("-------------");
 	}
@@ -86,7 +86,7 @@ Template.textParse.events({
 
 // determines whether the date has been specified based on keywords
 var dateIsSpecified = function(date_string) {
-	var date_indicators = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', '\/', 
+	var date_indicators = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec', '\/',
 	'1st', '2nd', '2th', '3rd', '3th', '4th', '5th', '6th', '7th', '8th', '19th', '0th'];
 	return stringContainsAnyPhrase(date_string, date_indicators);
 }
@@ -269,8 +269,8 @@ var index_of_word = some_string.indexOf('cool');
 
 
 var getMonthEndIndex = function(date_string) {
-	var month_identifiers = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 
-		'september', 'october', 'november', 'december', 'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 
+	var month_identifiers = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august',
+		'september', 'october', 'november', 'december', 'jan', 'feb', 'mar', 'apr', 'jun', 'jul',
 		'aug', 'sep', 'oct', 'nov', 'dec'];
 
 	for (var i = 0; i < month_identifiers.length; i++) {
@@ -292,7 +292,7 @@ var extractDate = function(date_string) {
 		var slash_found = false;
 		var slash_string = "";
 		// iterate through string, adding any numbers or slashes found
-		for (var i = 0; i < date_string.length; i++) {	
+		for (var i = 0; i < date_string.length; i++) {
 			console.log("!isNaN(" + date_string[i] + "): " + !isNaN(date_string[i]))
 
 			if (date_string[i] == ' ' || date_string[i] == ',') {
@@ -366,7 +366,7 @@ var extractMonth = function(date_string) {
 	var month_return = 0;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
 		return {'extracted': month_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
-	
+
 	phrases_to_check = ['february', 'feb'];
 	month_return++;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
@@ -436,12 +436,12 @@ var extractDayOfWeek = function(date_string) {
 	var day_return = 0;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
 		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
-	
+
 	phrases_to_check = ['monday', 'mon'];
 	day_return++;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
 		return {'extracted': day_return, 'revised': extractPhrases(date_string_lower, phrases_to_check)}
-	
+
 	phrases_to_check = ['tuesday', 'tues', 'tue'];
 	day_return++;
 	if (stringContainsAnyPhrase(date_string_lower, phrases_to_check))
@@ -476,7 +476,7 @@ var extractDayOfWeek = function(date_string) {
 	return {'extracted': moment().day(), 'revised': date_string}
 }
 
-// identifies any day-related qualifiers like "this" or "next", and modifies the 
+// identifies any day-related qualifiers like "this" or "next", and modifies the
 // day's numeric value according to the moment.js documentation's specifications
 // relevant documentation: http://momentjs.com/docs/#/get-set/day/
 //
