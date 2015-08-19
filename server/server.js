@@ -10,13 +10,13 @@ if (Meteor.isServer) {
     Router.route('/restful', {where: 'server'})
 
     .get(function () {
-        
+
     })
 
     .post(function () {
 
         twilio = Twilio(ACCOUNT_SID, AUTH_TOKEN);
-        
+
         var caller = this.request.body.From;
         var message = this.request.body.Body;
 
@@ -34,7 +34,7 @@ if (Meteor.isServer) {
 
         twilio.sendSms({
             to: caller,
-            from: '+16195522487', 
+            from: '+16195522487',
             body: 'message from: ' + caller + ', date entered: ' + dateTest.toString()
         }, function(err, responseData) {
             if (!err) {

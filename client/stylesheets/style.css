@@ -9,7 +9,7 @@ a: #FFFFFF;
     Global Declarations
    -------------------------*/
 
-body { 
+body {
 	padding-top: 60px; /* Needed for bs3 fixed top nav bar*/
 }
 
@@ -56,6 +56,10 @@ span {
     display:inline-block;
 }
 
+.twobitsok {
+	height: 170%;
+}
+
 /* -------------------------
     Jumbotron Declarations
    -------------------------*/
@@ -90,7 +94,7 @@ span {
 	width: 30%;
  	margin: 0 auto;
 }
-	
+
 .list-group a {
 	text-align: center;
 }
@@ -130,4 +134,3 @@ span {
 .centered {
 	text-align: center;
 }
-

@@ -50,7 +50,6 @@ Template.dialog.helpers({
 
 Template.dialog.rendered = function (){
 	if(Session.get('editDialog')){
-		// is editDialog a thing? look into it
 		var calevent = CalEvent.findOne({_id:Session.get('editDialog')});
 		if(calevent){
 			$('#title').val(calevent.title);
