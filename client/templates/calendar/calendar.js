@@ -9,10 +9,10 @@ Template.dialog.events({
 	'click .updateTitle': function(event, template){
 		var title = $('#title').val();
 		var calObject = {
-			"title":title,
-			"start":Session.get('date'),
-			"end":Session.get('date'),
-			"owner":Meteor.userId(),
+			"title": title,
+			"start": Session.get('date'),
+			"end": Session.get('date'),
+			"owner": Meteor.userId(),
 			"barber": Session.get('barberName')
 		}
 		CalEvent.insert(calObject)
@@ -58,35 +58,35 @@ Template.dialog.rendered = function (){
 	}
 }
 
-	Template.main.rendered = function(){
-		var calendar = $('#calendar').fullCalendar({ 
-			dayClick:function(date,allDay,jsEvent,view){
-				console.log(date);
-				Session.set('date', date);
-				Session.set('showDialogModal', "true");
-			},
+Template.main.rendered = function(){
+	var calendar = $('#calendar').fullCalendar({ 
+		dayClick:function(date,allDay,jsEvent,view){
+			console.log(date);
+			Session.set('date', date);
+			Session.set('showDialogModal', "true");
+		},
 
-			eventClick:function(calEvent,jsEvent,view){
-				Session.set('editing_event', calEvent._id);
-				$('#title').val(calEvent.title);
-			},
+		eventClick:function(calEvent,jsEvent,view){
+			Session.set('editing_event', calEvent._id);
+			$('#title').val(calEvent.title);
+		},
 
-			eventDrop:function(reqEvent){
-				Meteor.call('moveEvent',reqEvent);
-			},
+		eventDrop:function(reqEvent){
+			Meteor.call('moveEvent',reqEvent);
+		},
 
-			events:function(start,end,callback){
-				var calEvents = CalEvent.find({},{reactive:false}).fetch();
-				callback(calEvents);
-			},
-			editable:true,
-			selectable:true
+		events:function(start,end,callback){
+			var calEvents = CalEvent.find({},{reactive:false}).fetch();
+			callback(calEvents);
+		},
+		editable:true,
+		selectable:true
 
-		}).data().fullCalendar;
-		Deps.autorun(function(){
-			CalEvent.find().fetch();
-			if(calendar){
-				calendar.refetchEvents();
-			}
-		})
-	}
+	}).data().fullCalendar;
+	Deps.autorun(function(){
+		CalEvent.find().fetch();
+		if(calendar){
+			calendar.refetchEvents();
+		}
+	})
+}
