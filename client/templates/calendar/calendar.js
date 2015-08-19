@@ -15,7 +15,7 @@ Template.dialog.events({
 			"owner": Meteor.userId(),
 			"barber": Session.get('barberName')
 		}
-		CalEvent.insert(calObject)
+		CalEvent.insert(calObject);
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
 		Session.set('barberName', null)
@@ -60,7 +60,6 @@ Template.dialog.rendered = function (){
 Template.main.rendered = function(){
 	var calendar = $('#calendar').fullCalendar({ 
 		dayClick:function(date,allDay,jsEvent,view){
-			console.log(date);
 			Session.set('date', date);
 			Session.set('showDialogModal', "true");
 		},

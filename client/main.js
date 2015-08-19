@@ -13,7 +13,6 @@ Template.team.events({
 
 	'click #barber': function(event, template) {
 		var barberName = event.target.value;
-		// console.log(barberName);
 		Session.set('barberName', barberName);
 
 	}

@@ -22,20 +22,33 @@ if (Meteor.isServer) {
 
         var dateTest = getDateFromString(message);
 
+        var hour_string = dateTest.hour() % 12;
+        if (hour_string == 0)
+            hour_string = 12;
+
+        var am_pm = (dateTest.hour() >= 12 ? 'pm' : 'am');
+
+        var time_string = hour_string + ':' + (dateTest.minute() < 10 ? '0' + dateTest.minute() : dateTest.minute()) + am_pm;
+
+        //console.log(Meteor.userId());
+
+        var barbers = ['TJ','Kevin','Mikey','VJ', 'Bob', 'Rico', 'Larry', 'Dante', 'Rosco', 'Eli'];
+        var barber_index = Math.floor(Math.random() * (barbers.length - 1));
+
         var calObject = {
-            "title": "phone event",
-            "start": dateTest,
-            "end": dateTest,
-            "owner": "some owner",
-            "barber": "John"
+            "title": "Appointment with " + barbers[barber_index] + " at " + time_string,
+            "start": dateTest._d,
+            "end": dateTest._d,
+            "owner": "zCHb4oFZtwEH4HrjQ",
+            "barber":  barbers[barber_index]
         }
 
-        CalEvent.insert(calObject)
+        CalEvent.insert(calObject);
 
         twilio.sendSms({
             to: caller,
             from: '+16195522487',
-            body: 'message from: ' + caller + ', date entered: ' + dateTest.toString()
+            body: 'date added to calendar: ' + dateTest.toString()
         }, function(err, responseData) {
             if (!err) {
                 console.log(responseData.from);
@@ -46,3 +59,9 @@ if (Meteor.isServer) {
     });
 
 }
+
+Meteor.methods({
+    'parseText': function(date_string) {
+        return getDateFromString(date_string)._d;
+    }
+})
