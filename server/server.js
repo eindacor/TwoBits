@@ -48,7 +48,7 @@ if (Meteor.isServer) {
         twilio.sendSms({
             to: caller,
             from: '+16195522487', 
-            body: 'message from: ' + caller + ', date entered: ' + dateTest.toString()
+            body: 'date added to calendar: ' + dateTest.toString()
         }, function(err, responseData) {
             if (!err) {
                 console.log(responseData.from);

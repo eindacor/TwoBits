@@ -21,14 +21,11 @@ Template.textParse.events({
 		var date_string = $('#string-enter').val();
 
 		Meteor.call('parseText', date_string, function(error, response) {
-			console.log(date_string);
 			if(error) {
 				console.log('ERROR :', error);
 			}
 
 			else {
-				console.log('testing');
-				console.log(response);
 				var entered_date = moment(response);
 				// set session variables to update helpers
 				Session.set('day_of_week_entered', getDayOfWeekFromInt(entered_date.day()));

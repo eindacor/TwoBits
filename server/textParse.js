@@ -1,8 +1,6 @@
 getDateFromString = function(date_string) {
 	var entered_moment = moment();
-	console.log(date_string);
 	date_string = date_string.replace(/\n/g, ' ');
-	console.log(date_string);
 	// determine whether the date has been specified based on keywords
 	if (dateIsSpecified(date_string)) {
 		entered_moment = extractDate(date_string).extracted;

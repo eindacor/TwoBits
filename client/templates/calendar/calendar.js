@@ -61,7 +61,6 @@ Template.dialog.rendered = function (){
 Template.main.rendered = function(){
 	var calendar = $('#calendar').fullCalendar({ 
 		dayClick:function(date,allDay,jsEvent,view){
-			console.log(date);
 			Session.set('date', date);
 			Session.set('showDialogModal', "true");
 		},
