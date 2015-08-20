@@ -1,26 +1,27 @@
 getDateFromString = function(date_string) {
 	var entered_moment = moment();
 	date_string = date_string.replace(/\n/g, ' ');
-	// determine whether the date has been specified based on keywords
+
 	if (dateIsSpecified(date_string)) {
-		entered_moment = extractDate(date_string).extracted;
-		date_string = extractDate(date_string).revised;
+		var extracted_object = extractDate(date_string);
+		entered_moment = extracted_object.extracted;
+		date_string = extracted_object.revised;
 	}
 
-	// if it has not, determine what day is implied by the text
 	else {
-		var day_found = extractDay(date_string).extracted;
+		var extracted_object = extractDay(date_string);
+		var day_found = extracted_object.extracted;
 		entered_moment.day((moment().day() > day_found ? day_found + 7 : day_found));
-		date_string = extractDay(date_string).revised;
+		date_string = extracted_object.revised;
 	}
 
-	// after the date has been identified, determine if a year was specified
 	var year_min = 2000;
 	var year_max = 2100;
-	if (extractYear(date_string, year_min, year_max).extracted != 'none found')
-		entered_moment.year(extractYear(date_string, year_min, year_max).extracted);
+	var extracted_object = extractYear(date_string, year_min, year_max);
+	if (extracted_object.extracted != 'none found')
+		entered_moment.year(extracted_object.extracted);
 
-	date_string = extractYear(date_string, 2000, 2100).revised;
+	date_string = extracted_object.revised;
 
 	var time_object = extractTime(date_string, 'pm');
 
@@ -440,7 +441,7 @@ var extractYear = function(date_string, search_start, search_end) {
 responseIsPositive = function(message) {
     var message_lower = message.toLowerCase();
     var keywords = ['yes', 'ok', 'good', 'fine', 'confirm', 'do it', 'yessir', 'aight', 'word', 'si', 
-        'oui', 'sure', 'no problem'];
+        'oui', 'sure', 'no problem', 'yeah', 'yah', 'dig it', 'get some', 'holla'];
     return stringContainsAnyPhrase(message_lower, keywords);
 }
 
