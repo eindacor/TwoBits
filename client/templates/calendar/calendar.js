@@ -21,6 +21,7 @@ Template.dialog.events({
 		Session.set('barberName', null)
 		Session.set('showDialogModal', "false")
 	}
+	}
 });
 
 Template.reservationsDashboard.helpers({

@@ -436,3 +436,21 @@ var extractYear = function(date_string, search_start, search_end) {
 
 	return {'extracted': 'none found', 'revised': date_string};
 }
+
+responseIsPositive = function(message) {
+    var message_lower = message.toLowerCase();
+    var keywords = ['yes', 'ok', 'good', 'fine', 'confirm', 'do it', 'yessir', 'aight', 'word', 'si', 
+        'oui', 'sure'];
+    return stringContainsAnyPhrase(message_lower, keywords);
+}
+
+extractCancellation = function(message) {
+	var message_lower = message.toLowerCase();
+	var keywords = ['cancel'];
+	var keywords_to_remove = ['appointment', 'reservation', 'cancel'];
+
+	if (stringContainsAnyPhrase(message_lower, keywords))
+		return {'extracted': true, 'revised': extractPhrases(message_lower, keywords_to_remove)};
+
+	else return {'extracted': false, 'revised': message};
+}
