@@ -76,6 +76,7 @@ Template.reservationsDashboard.rendered = function(){
 		eventClick:function(calEvent,jsEvent,view){
 			Session.set('editing_event', calEvent._id);
 			$('#title').val(calEvent.title);
+			Session.set('showDialogModal', "true");
 		},
 
 		eventDrop:function(reqEvent){
