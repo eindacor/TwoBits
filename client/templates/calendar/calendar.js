@@ -19,20 +19,25 @@ Template.dialog.events({
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
 		Session.set('barberName', null)
+		Session.set('showDialogModal', "false")
 		} 
 	});
 
 Template.reservationsDashboard.helpers({
 	editing_event: function(){
 		return Session.get('editing_event');
-	}
-});
+	},
 
-Template.insertCalEvent.helpers({
 	showDialogModal: function() {
 		return Session.get('showDialogModal') == "true";
 	}
 });
+
+// Template.insertCalEvent.helpers({
+// 	showDialogModal: function() {
+// 		return Session.get('showDialogModal') == "true";
+// 	}
+// });
 
 Template.dialog.helpers({
 	title: function(){
@@ -57,7 +62,7 @@ Template.dialog.rendered = function (){
 	}
 }
 
-Template.main.rendered = function(){
+Template.reservationsDashboard.rendered = function(){
 	var calendar = $('#calendar').fullCalendar({ 
 		dayClick:function(date,allDay,jsEvent,view){
 			Session.set('date', date);

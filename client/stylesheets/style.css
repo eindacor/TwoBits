@@ -13,7 +13,7 @@ body {
 	padding-top: 60px; /* Needed for bs3 fixed top nav bar*/
 }
 
-h2, .theTeamInstructions {
+.theTeamInstructions {
 	text-align: center;
 }
 
@@ -106,7 +106,9 @@ span {
 }
 
 .containerbarberprofile {
+	background-color: #FAFAFA;
 	padding-bottom: 25px;
+	display: block;
 }
 
 .barberDescription {
@@ -130,7 +132,44 @@ span {
 	background-color: #F1F1F1;
 }
 
-
 .centered {
 	text-align: center;
+}
+
+.profile-image {
+	height: 120px;
+	width: 120px;
+	border-radius: 50%;
+	border: 3px solid #676767;
+}
+
+.profile-area {
+	display: block;
+	margin-top: 20px;
+	text-align: left;
+}
+
+.profile-description {
+	text-align: left;
+	float: left;
+}
+
+.profile-description > h1 {
+	color: #3480c8;
+	margin: none;
+	font-weight: bold;
+}
+
+.profile-description > h3 {
+	color: #676767;
+	margin-top: 0px;
+}
+
+#calendar {
+	margin-top: 40px;
+	margin-bottom: 120px;
+}
+
+.navbar .navbar-nav {
+	float:right;
 }
