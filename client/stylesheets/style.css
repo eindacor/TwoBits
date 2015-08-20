@@ -230,3 +230,39 @@ span {
 	clear: both;
 	opacity: .7;
 }
+
+textarea {
+	resize: none;
+	width: 100%;
+	height: 48px;
+	font-size: 2em;
+}
+
+#test-button {
+	background-color: #FF6347;
+	border: none;
+	color: white;
+	width: 160px;
+	height: 48px;
+	font-size: 1.5em;
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+#string-enter {
+	font-size: 1.2em;
+
+}
+
+.orange {
+	color: #FF6347;
+}
+
+.gray {
+	color: #676767;
+}
+
+.text-parse-test {
+	margin: 80px 20px 500px 20px;
+	display: block;
+}

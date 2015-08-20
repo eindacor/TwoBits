@@ -6,7 +6,8 @@ Template.textParse.helpers({
 			'month': Session.get('month_entered'),
 			'year': Session.get('year_entered'),
 			'hour': Session.get('hour_entered'),
-			'minute': Session.get('minute_entered')
+			'minute': Session.get('minute_entered'),
+			'original': Session.get('original_string')
 		}
 		return date_info;
 	},
@@ -19,6 +20,7 @@ Template.textParse.helpers({
 Template.textParse.events({
 	'click #test-button': function() {
 		var date_string = $('#string-enter').val();
+		console.log(date_string);
 
 		Meteor.call('parseText', date_string, function(error, response) {
 			if(error) {
@@ -28,6 +30,7 @@ Template.textParse.events({
 			else {
 				var entered_date = moment(response);
 				// set session variables to update helpers
+				Session.set('original_string', date_string);
 				Session.set('day_of_week_entered', getDayOfWeekFromInt(entered_date.day()));
 				Session.set('day_entered', entered_date.date());
 				Session.set('month_entered', getMonthFromInt(entered_date.month()));
