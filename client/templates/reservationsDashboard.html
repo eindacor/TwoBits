@@ -1,14 +1,22 @@
 <template name="reservationsDashboard">
-	<section>
-		<h2>Book your appointment</h2>
-		<p class="theTeamInstructions">1. Select your barber below.</p>
-		<p class="theTeamInstructions">2. Sign in to book your appointment.</p>
-		<div class="list-group">
-			{{ > team }}
+	<section class="">
+		<div class="container containerbarberprofile col-md-12">
+		{{ #if currentUser }}
+			{{ > managerProfile }}
+		{{ else }}
+		<div class="container"> 
+			{{> loginButtons}}
 		</div>
-	</section>
-
-	<section class="calendarbg">
-		{{ > bookAppointment }}
+		{{ /if }}
+		</div>
+		<div class="calendarbg container col-md-12">
+			<div class="container col-md-8 col-md-offset-2">
+				{{ #if showDialogModal }}
+					{{> dialog}}
+				{{ /if }}
+				<div id="calendar">
+				</div>
+			</div>
+		</div>
 	</section>
 </template>
