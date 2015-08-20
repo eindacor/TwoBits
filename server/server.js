@@ -16,7 +16,8 @@ var getFormattedTimeFromDate = function(date_object) {
 
     var am_pm = (date_object.hour() >= 12 ? 'pm' : 'am');
 
-    var time_string = hour_string + ':' + (date_object.minute() < 10 ? '0' + date_object.minute() : date_object.minute()) + am_pm;
+    var time_string = hour_string + ':' + (date_object.minute() < 10 ? '0' + 
+        date_object.minute() : date_object.minute()) + am_pm;
     return time_string;
 }
 
@@ -58,6 +59,22 @@ var getFormattedStringFromDate = function(date_object) {
     return return_string;
 }
 
+var sendMessage = function(twilio, to_number, message) {
+    twilio.sendSms({
+        to: to_number,
+        from: '+16195522487',
+        body: message
+    }, 
+
+    function(err, responseData) {
+        if (!err) {
+            console.log(responseData.from);
+            console.log(responseData.body);
+            console.log(responseData);
+        }
+    });
+}
+
 if (Meteor.isServer) {
 
     ACCOUNT_SID = 'AC789aba0503b38a38b2b186f5004cbc5a';
@@ -84,19 +101,9 @@ if (Meteor.isServer) {
                 var temp_id = temp_reservation._id;
                 temp_CalEvent.remove({'_id': temp_id});
 
-                twilio.sendSms({
-                    to: temp_reservation.phone_number,
-                    from: '+16195522487',
-                    body: 'Your appointment on ' + getFormattedStringFromDate(moment(temp_reservation.start)) + ' has been confirmed.'
-                }, 
-
-                function(err, responseData) {
-                    if (!err) {
-                        console.log(responseData.from);
-                        console.log(responseData.body);
-                        console.log(responseData);
-                    }
-                });
+                var message_out = 'Your appointment on ' + getFormattedStringFromDate(moment(temp_reservation.start)) +
+                    ' has been confirmed.';
+                sendMessage(twilio, temp_reservation.phone_number, message_out);
             });
         }
 
@@ -107,21 +114,16 @@ if (Meteor.isServer) {
                 var res_id = reservation._id;
                 var date_of_res = reservation.start;
                 var phone_number = reservation.phone_number;
+                var customer_name = reservation.name;
                 CalEvent.remove({'_id': res_id});
 
-                twilio.sendSms({
-                    to: phone_number,
-                    from: '+16195522487',
-                    body: 'Your appointment on ' + getFormattedStringFromDate(date_of_res) + ' has been cancelled.'
-                }, 
+                var message_out = 'Your appointment on ' + getFormattedStringFromDate(moment(date_of_res)) + 
+                    ' has been cancelled.';
+                sendMessage(twilio, phone_number, message_out);
 
-                function(err, responseData) {
-                    if (!err) {
-                        console.log(responseData.from);
-                        console.log(responseData.body);
-                        console.log(responseData);
-                    }
-                });
+                message_out = customer_name + '\'s appointment on ' + getFormattedStringFromDate(moment(date_of_res)) + 
+                    ' has been cancelled.';
+                sendMessage(twilio, '+12037528089', message_out);
             });
         }
 
@@ -130,7 +132,8 @@ if (Meteor.isServer) {
 
             var time_string = getFormattedTimeFromDate(date_object);
 
-            var customers = ['TJ Johnson','Kevin Robinson','Mikey Belushi','VJ Impastato', 'Bob Verhoff', 'Rico Suave', 'Larry David', 'Dante Bernette', 'Rosco Bosco', 'Eli Roman'];
+            var customers = ['TJ Johnson','Kevin Robinson','Mikey Belushi','VJ Impastato', 
+                'Bob Verhoff', 'Rico Suave', 'Larry David', 'Dante Bernette', 'Rosco Bosco', 'Eli Roman'];
             var customer_index = Math.floor(Math.random() * (customers.length - 1));
 
             var calObject = {
@@ -139,24 +142,15 @@ if (Meteor.isServer) {
                 "end": date_object._d,
                 "owner": getUserIdFromPhoneNumber(caller),
                 "phone_number": caller,
+                "name": customers[customer_index],
                 "barber":  'Eddie'
             }
 
             temp_CalEvent.insert(calObject);
 
-            twilio.sendSms({
-                to: '+12037528089',
-                from: '+16195522487',
-                body: customers[customer_index] + ' has requested an appoinment on ' + getFormattedStringFromDate(date_object) + '. Please confirm.'
-            }, 
-
-            function(err, responseData) {
-                if (!err) {
-                    console.log(responseData.from);
-                    console.log(responseData.body);
-                    console.log(responseData);
-                }
-            });
+            message_out = customers[customer_index] + ' has requested an appoinment on ' 
+                + getFormattedStringFromDate(date_object) + '. Please confirm.';
+            sendMessage(twilio, '+12037528089', message_out);
         }
     });
 }
