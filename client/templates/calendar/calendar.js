@@ -1,9 +1,7 @@
-// if (Meteor.isClient) {
-// This is my call back for the close modal button
 Template.dialog.events({
 	"click .closeDialog": function(event, template){
 		Session.set('editing_event', null);
-		Session.set('showDialogModal', "false");
+		Session.set('showDialogModal', false);
 	},
 
 	'click .updateTitle': function(event, template){
@@ -19,7 +17,7 @@ Template.dialog.events({
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
 		Session.set('barberName', null)
-		Session.set('showDialogModal', "false")
+		Session.set('showDialogModal', false)
 	}
 });
 
@@ -29,19 +27,13 @@ Template.reservationsDashboard.helpers({
 	},
 
 	showDialogModal: function() {
-		return Session.get('showDialogModal') == "true";
+		return Session.get('showDialogModal');
 	},
 
 	showCalendar: function() {
 		return Meteor.user() != null;
 	}
 });
-
-// Template.insertCalEvent.helpers({
-// 	showDialogModal: function() {
-// 		return Session.get('showDialogModal') == "true";
-// 	}
-// });
 
 Template.dialog.helpers({
 	title: function(){
@@ -53,7 +45,7 @@ Template.dialog.helpers({
 		else return '';
 	},
 	showDialogModal: function() {
-		return Session.get('showDialogModal') == "true";
+		return Session.get('showDialogModal');
 	}
 });
 
@@ -70,13 +62,13 @@ Template.reservationsDashboard.rendered = function(){
 	var calendar = $('#calendar').fullCalendar({
 		dayClick:function(date,allDay,jsEvent,view){
 			Session.set('date', date);
-			Session.set('showDialogModal', "true");
+			Session.set('showDialogModal', true);
 		},
 
 		eventClick:function(calEvent,jsEvent,view){
 			Session.set('editing_event', calEvent._id);
 			$('#title').val(calEvent.title);
-			Session.set('showDialogModal', "true");
+			Session.set('showDialogModal', true);
 		},
 
 		eventDrop:function(reqEvent){
