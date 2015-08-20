@@ -173,3 +173,60 @@ span {
 .navbar .navbar-nav {
 	float:right;
 }
+
+.footer {
+	width: 100%;
+	height: 60px;
+	background-color: #676767;
+	padding-top: 10px;
+	bottom: 0;
+	color: white;
+}
+
+.footer-image {
+	width: 200px;
+	height: 35px;
+	opacity: .5;
+}
+
+.footer-stamp {
+	position: relative;
+	display: block;
+	float: left;
+}
+
+.footer-icons {
+	position: relative;
+	margin-right: 0px;
+	float: right;
+	margin-top: 0px;
+	display: inline-block;
+	clear: none;
+	height: 100%;
+	width: 30%;
+	font-size: 2.2em;
+}
+
+.footer-icon {
+	color: white;
+	opacity: .5;
+	position: relative;
+	margin-right: 0px;
+	float: right;
+	margin-top: 0px;
+	display: inline-block;
+	margin-left: 40px;
+}
+
+.footer-icon:hover {
+	opacity: 1;
+	color: white;
+	text-decoration: none;
+}
+
+#copyright {
+	color: white;
+	display: block;
+	clear: both;
+	opacity: .7;
+}
