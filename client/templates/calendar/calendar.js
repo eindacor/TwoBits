@@ -1,5 +1,5 @@
 // if (Meteor.isClient) {
-// This is my call back for the close modal button 
+// This is my call back for the close modal button
 Template.dialog.events({
 	"click .closeDialog": function(event, template){
 		Session.set('editing_event', null);
@@ -20,7 +20,8 @@ Template.dialog.events({
 		Session.set('editing_event',null);
 		Session.set('barberName', null)
 		Session.set('showDialogModal', "false")
-	} 
+	}
+	}
 });
 
 Template.reservationsDashboard.helpers({
@@ -67,7 +68,7 @@ Template.dialog.rendered = function (){
 }
 
 Template.reservationsDashboard.rendered = function(){
-	var calendar = $('#calendar').fullCalendar({ 
+	var calendar = $('#calendar').fullCalendar({
 		dayClick:function(date,allDay,jsEvent,view){
 			Session.set('date', date);
 			Session.set('showDialogModal', "true");
