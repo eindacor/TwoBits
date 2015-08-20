@@ -1,5 +1,5 @@
 // if (Meteor.isClient) {
-// This is my call back for the close modal button 
+// This is my call back for the close modal button
 Template.dialog.events({
 	"click .closeDialog": function(event, template){
 		Session.set('editing_event', null);
@@ -19,7 +19,7 @@ Template.dialog.events({
 		Meteor.call('updateTitle',Session.get('editing_event'),title);
 		Session.set('editing_event',null);
 		Session.set('barberName', null)
-		} 
+		}
 	});
 
 Template.reservationsDashboard.helpers({
@@ -58,7 +58,7 @@ Template.dialog.rendered = function (){
 }
 
 Template.main.rendered = function(){
-	var calendar = $('#calendar').fullCalendar({ 
+	var calendar = $('#calendar').fullCalendar({
 		dayClick:function(date,allDay,jsEvent,view){
 			Session.set('date', date);
 			Session.set('showDialogModal', "true");
@@ -78,7 +78,8 @@ Template.main.rendered = function(){
 			callback(calEvents);
 		},
 		editable:true,
-		selectable:true
+		selectable:true,
+		startEditable:true
 
 	}).data().fullCalendar;
 	Deps.autorun(function(){

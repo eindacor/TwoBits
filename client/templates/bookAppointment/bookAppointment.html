@@ -8,27 +8,12 @@
 				<h2> Choose a barber above. </h2>
 			{{ /if }}
 			{{ #if currentUser }}
-				{{ > insertCalEvent }} 
+				{{ > insertCalEvent }}
 				{{> main}}
 			{{ else }}
-				<div class="container"> 
+				<div class="container">
 					{{> loginButtons}}
 				</div>
 			{{ /if }}
 		</div>
-<!-- <section class="barberprofilebg">
-		<div class="container containerbarberprofile">
-		<h2>Barber Profile</h2>
-		<h4>TJ Green</h4>
-		<img src="img/TJ.jpg" alt="Picture of TJ cutting hair" class="img-rounded profilePic">
-			
-			<ul class="barberDescription">
-				<li><span>Member since:</span> 2010</li>
-				<li><span>Hometown:</span> Bridgeport</li>
-				<li><span>I am a barber because:</span> I am the best barber in town</li>
-				<li><span>My spare time:</span> Ride bike</li>
-				<li><span>Haircut Availability:</span></li>
-			</ul>	
-		</div>
-</section> -->
 </template>
