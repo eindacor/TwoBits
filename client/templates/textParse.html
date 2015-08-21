@@ -1,9 +1,11 @@
 <template name="textParse">
-	<div class="text-parse-test">
-		<button id="test-button">identify date</button>
-		<textarea id="string-enter"></textarea>
-		{{#if show_result}}
-		<h3>{{entered_date.day_of_week}}, {{entered_date.month}} {{entered_date.day}}, {{entered_date.year}} at {{entered_date.hour}}:{{entered_date.minute}}</h3>
-		{{/if}}
+	<div class="container col-md-8 col-md-offset-2">
+		<div class="text-parse-test">
+			<textarea id="string-enter" placeholder="enter date"></textarea>
+			<button id="test-button">parse it!</button>
+			{{#if show_result}}
+			<h3 class="parse-result gray">{{entered_date.original}} -> <span class="orange">{{entered_date.day_of_week}}, {{entered_date.month}} {{entered_date.day}}, {{entered_date.year}} at {{entered_date.hour}}:{{entered_date.minute}}</span></h3>
+			{{/if}}
+		</div>
 	</div>
 </template>

@@ -1,7 +1,11 @@
 var getNameFromPhoneNumber = function(phone_number) {
-    var modified_number = phone_number.replace(/-/g, '');
-
-    return "John Smith";
+    switch(phone_number) {
+        case '+16098928262' : return "Joe Pollack";
+        case '+12037528089' : return "Chris Impastato";
+        case '+12035437997' : return "Peter Mooney";
+        case '+14087188788' : return "Krishna Sampath";
+        default: return "John Smith";
+    }
 }
 
 var getUserIdFromPhoneNumber = function(phone_number) {
@@ -108,22 +112,22 @@ if (Meteor.isServer) {
         }
 
         else if(extractCancellation(message).extracted) {
-            var reservations = CalEvent.find({'phone_number': caller});
+            var reservations_found = CalEvent.find({'phone_number': caller});
 
-            reservations.forEach( function(reservation) {
+            reservations_found.forEach( function(reservation) {
                 var res_id = reservation._id;
                 var date_of_res = reservation.start;
                 var phone_number = reservation.phone_number;
                 var customer_name = reservation.name;
                 CalEvent.remove({'_id': res_id});
 
-                var message_out = 'Your appointment on ' + getFormattedStringFromDate(moment(date_of_res)) + 
+                var message_to_customer = 'Your appointment on ' + getFormattedStringFromDate(moment(date_of_res)) + 
                     ' has been cancelled.';
-                sendMessage(twilio, phone_number, message_out);
+                sendMessage(twilio, phone_number, message_to_customer);
 
-                message_out = customer_name + '\'s appointment on ' + getFormattedStringFromDate(moment(date_of_res)) + 
-                    ' has been cancelled.';
-                sendMessage(twilio, '+12037528089', message_out);
+                var message_to_barber = customer_name + '\'s appointment on ' + 
+                    getFormattedStringFromDate(moment(date_of_res)) + ' has been cancelled.';
+                sendMessage(twilio, '+12037528089', message_to_barber);
             });
         }
 
@@ -132,23 +136,24 @@ if (Meteor.isServer) {
 
             var time_string = getFormattedTimeFromDate(date_object);
 
-            var customers = ['TJ Johnson','Kevin Robinson','Mikey Belushi','VJ Impastato', 
-                'Bob Verhoff', 'Rico Suave', 'Larry David', 'Dante Bernette', 'Rosco Bosco', 'Eli Roman'];
-            var customer_index = Math.floor(Math.random() * (customers.length - 1));
+            // var customers = ['TJ Johnson','Kevin Robinson','Mikey Belushi','VJ Impastato', 
+            //     'Bob Verhoff', 'Rico Suave', 'Larry David', 'Dante Bernette', 'Rosco Bosco', 'Eli Roman'];
+            // var customer_index = Math.floor(Math.random() * (customers.length - 1));
 
+            var caller_name = getNameFromPhoneNumber(caller);
             var calObject = {
-                "title": customers[customer_index] + " @ " + time_string,
+                "title": caller_name + " @ " + time_string,
                 "start": date_object._d,
                 "end": date_object._d,
                 "owner": getUserIdFromPhoneNumber(caller),
                 "phone_number": caller,
-                "name": customers[customer_index],
+                "name": caller_name,
                 "barber":  'Eddie'
             }
 
             temp_CalEvent.insert(calObject);
 
-            message_out = customers[customer_index] + ' has requested an appoinment on ' 
+            message_out = caller_name + ' has requested an appoinment on ' 
                 + getFormattedStringFromDate(date_object) + '. Please confirm.';
             sendMessage(twilio, '+12037528089', message_out);
         }
